@@ -197,7 +197,7 @@ char *argv[];
                     FIN=1;
 		            close (ls_TCP);
 		            close (s_UDP);
-                    perror("\nFinalizando el servidor. SeÃal recibida en elect\n "); 
+                    perror("\nFinalizando el servidor. Seï¿½al recibida en elect\n "); 
                 }
             }
            else { 
@@ -261,7 +261,7 @@ char *argv[];
                 serverUDP (s_UDP, buffer, clientaddr_in);
                 }
           }
-		}   /* Fin del bucle infinito de atención a clientes */
+		}   /* Fin del bucle infinito de atenciï¿½n a clientes */
         /* Cerramos los sockets UDP y TCP */
         close(ls_TCP);
         close(s_UDP);
@@ -347,7 +347,7 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in)
 		 * how the server will know that no more requests will
 		 * follow, and the loop will be exited.
 		 */
-	while (len = recv(s, buf, TAM_BUFFER, 0)) {
+	/*while (len = recv(s, buf, TAM_BUFFER, 0)) {	
 		if (len == -1) errout(hostname); /* error from recv */
 			/* The reason this while loop exists is that there
 			 * is a remote possibility of the above recv returning
@@ -362,22 +362,37 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in)
 			 * have been received, thus guaranteeing that the
 			 * next recv at the top of the loop will start at
 			 * the begining of the next request.
-			 */
+			 
 		while (len < TAM_BUFFER) {
 			len1 = recv(s, &buf[len], TAM_BUFFER-len, 0);
 			if (len1 == -1) errout(hostname);
 			len += len1;
 		}
-			/* Increment the request count. */
+			/* Increment the request count.
 		reqcnt++;
 			/* This sleep simulates the processing of the
 			 * request that a real server might do.
-			 */
+			 
 		sleep(1);
-			/* Send a response back to the client. */
+			/* Send a response back to the client. 
 		if (send(s, buf, TAM_BUFFER, 0) != TAM_BUFFER) errout(hostname);
-	}
+	}*/
 
+	//TODO: recibir usuario
+	len = recv(s, buf, TAM_BUFFER, 0);
+	if (len == -1) errout(hostname);			 
+		while (len < TAM_BUFFER) {
+			len1 = recv(s, &buf[len], TAM_BUFFER-len, 0);
+			if (len1 == -1) errout(hostname);
+			len += len1;
+		}
+		reqcnt++;
+	/////////////////////////////////////////////////////////////////////////
+
+	//!Obtener info del usuario
+	//!Rellenar .log
+	//if (send(s, buf, TAM_BUFFER, 0) != TAM_BUFFER) errout(hostname); //!enviar respuesta al cliente
+	
 		/* The loop has terminated, because there are no
 		 * more requests to be serviced.  As mentioned above,
 		 * this close will block until all of the sent replies
@@ -437,7 +452,7 @@ void serverUDP(int s, char * buffer, struct sockaddr_in clientaddr_in)
       memset (&hints, 0, sizeof (hints));
       hints.ai_family = AF_INET;
 		/* Treat the message as a string containing a hostname. */
-	    /* Esta función es la recomendada para la compatibilidad con IPv6 gethostbyname queda obsoleta. */
+	    /* Esta funciï¿½n es la recomendada para la compatibilidad con IPv6 gethostbyname queda obsoleta. */
     errcode = getaddrinfo (buffer, NULL, &hints, &res); 
     if (errcode != 0){
 		/* Name was not found.  Return a

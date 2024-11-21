@@ -44,10 +44,10 @@ int main(int argc, char* argv[]){
     if (pid == 0){  //Hijo
         if (strcmp(metodo, "TCP") == 0) {
             printf("TCP\n");
-            execlp("./clientcp", "clientcp", remoteHost, NULL);
+            execlp("./clientcp", "clientcp", usuario, remoteHost, NULL);
         } else if (strcmp(metodo, "UDP") == 0) {
             printf("UDP\n");
-            execlp("./clientudp", "clientudp", remoteHost, NULL);
+            execlp("./clientudp", "clientudp", usuario, remoteHost, NULL);
         } else {
             fprintf(stderr, "Usage: %s <TCP || UDP>\n", argv[0]);
             exit(1);

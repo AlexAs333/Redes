@@ -86,7 +86,7 @@ char *argv[];
 		/* Try to connect to the remote server at the address
 		 * which was just built into peeraddr.
 		 */
-	if (connect(s, (const struct sockaddr *)&servaddr_in, sizeof(struct sockaddr_in)) == -1) {
+	if (connect(s, (const struct sockaddr *)&servaddr_in, sizeof(struct sockaddr_in)) == -1) { //TODO: conexion con servidor
 		perror(argv[0]);
 		fprintf(stderr, "%s: unable to connect to remote\n", argv[0]);
 		exit(1);
@@ -117,13 +117,21 @@ char *argv[];
 			argv[1], ntohs(myaddr_in.sin_port), (char *) ctime(&timevar));
 
 
-	for (i=1; i<=5; i++) {
+	/*for (i=1; i<=5; i++) {
 		*buf = i;
 		if (send(s, buf, TAM_BUFFER, 0) != TAM_BUFFER) {
 			fprintf(stderr, "%s: Connection aborted on error ",	argv[0]);
 			fprintf(stderr, "on send number %d\n", i);
 			exit(1);
 		}
+	}*/
+
+	//*Envir usuario y host al servidor
+	*buf = argv[1];	//usuario
+	if (send(s, buf, TAM_BUFFER, 0) != TAM_BUFFER) {
+		fprintf(stderr, "%s: Connection aborted on error ",	argv[0]);
+		fprintf(stderr, "on send number %d\n", i);
+		exit(1);
 	}
 
 		/* Now, shutdown the connection for further sends.
