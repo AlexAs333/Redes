@@ -11,16 +11,16 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <signal.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <netdb.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include "funciones.h"
 
 
 
-#define PUERTO 17278
+#define PUERTO 1233
 #define ADDRNOTFOUND	0xffffffff	/* return address for unfound host */
 #define BUFFERSIZE	1024	/* maximum size of packets to be received */
 #define TAM_BUFFER 10
@@ -43,7 +43,7 @@ void serverUDP(int s, char * buffer, struct sockaddr_in clientaddr_in);
 void errout(char *);		/* declare error out routine */
 
 int FIN = 0;             /* Para el cierre ordenado */
-void finalizar(){ FIN = 1; }
+void finalizar(){FIN = 1;}
 
 int main(argc, argv)
 int argc;
@@ -67,6 +67,14 @@ char *argv[];
     char buffer[BUFFERSIZE];	/* buffer for packets to be read into */
     
     struct sigaction vec;
+
+	//*Crear el fichero
+    FILE *fichero = fopen("peticiones.log", "a");
+
+    if(fichero == NULL){
+        fprintf(stderr, "Error al abrir el fichero\n");
+        exit(1);
+    }
 
 		/* Create the listen socket. */
 	ls_TCP = socket (AF_INET, SOCK_STREAM, 0);
@@ -197,6 +205,7 @@ char *argv[];
                     FIN=1;
 		            close (ls_TCP);
 		            close (s_UDP);
+					fclose(fichero); // cerramos el fichero
                     perror("\nFinalizando el servidor. Se�al recibida en elect\n "); 
                 }
             }
@@ -216,6 +225,30 @@ char *argv[];
     				 */
     			s_TCP = accept(ls_TCP, (struct sockaddr *) &clientaddr_in, &addrlen);
     			if (s_TCP == -1) exit(1);
+
+                //TODO log del TCP
+				//*Llenar RegistroComunicacion
+				RegistroComunicacion registro;
+
+				// Obtener la fecha y hora actual para el registro
+				time_t t = time(NULL);
+				struct tm *tm_info = localtime(&t);
+				char fecha[26];
+				strftime(fecha, 26, "%Y-%m-%d %H:%M:%S", tm_info);
+				registro.fecha = fecha;
+
+				// Rellenar la información de la comunicación TCP
+				//!!CAMBIAR COSAS. SIN REVISAR DE CHATI
+				registro.nombreHost = "MiServidor";  // O usar gethostname() si es necesario
+				registro.ip = inet_ntoa(clientaddr_in.sin_addr);  // Dirección IP del cliente
+				registro.protocolo = "TCP";  // Protocolo de transporte (TCP en este caso)
+				registro.puertoEfimero = "0";  // Puerto efímero del cliente, si está disponible
+				registro.orden = "Orden recibida";  // Aquí deberías capturar la orden del cliente
+				registro.respuesta = "200 OK";  // Respuesta enviada al cliente
+				registro.puertoCliente = ntohs(clientaddr_in.sin_port);  // Puerto del cliente
+				
+				editaFichero(fichero, registro);
+
     			switch (fork()) {
         			case -1:	/* Can't fork, just exit. */
         				exit(1);
@@ -257,6 +290,30 @@ char *argv[];
                 /* Make sure the message received is
                 * null terminated.
                 */
+
+                //TODO log del UDP
+			   	// Rellenar la estructura de datos de la comunicación
+				RegistroComunicacion registro;
+
+				// Obtener la fecha y hora actual para el registro
+				time_t t = time(NULL);
+				struct tm *tm_info = localtime(&t);
+				char fecha[26];
+				strftime(fecha, 26, "%Y-%m-%d %H:%M:%S", tm_info);
+				registro.fecha = fecha;
+                //!!CAMBIAR COSAS. SIN REVISAR DE CHATI
+				// Rellenar la información de la comunicación UDP
+				registro.nombreHost = "MiServidor";  // O usar gethostname() si es necesario
+				registro.ip = inet_ntoa(clientaddr_in.sin_addr);  // Dirección IP del cliente
+				registro.protocolo = "UDP";  // Protocolo de transporte (UDP en este caso)
+				registro.puertoEfimero = "0";  // UDP no maneja puertos efímeros como TCP, puedes dejarlo en "0"
+				registro.orden = "Orden recibida";  // Aquí deberías capturar la orden del cliente
+				registro.respuesta = "200 OK";  // Respuesta enviada al cliente
+				registro.puertoCliente = ntohs(clientaddr_in.sin_port);  // Puerto del cliente
+
+				// Llamar a la función que edita el fichero con la estructura de datos
+				editaFichero(fichero, &registro);
+
                 buffer[cc]='\0';
                 serverUDP (s_UDP, buffer, clientaddr_in);
                 }
@@ -265,6 +322,7 @@ char *argv[];
         /* Cerramos los sockets UDP y TCP */
         close(ls_TCP);
         close(s_UDP);
+		fclose(fichero); // cerramos el fichero
     
         printf("\nFin de programa servidor!\n");
         
