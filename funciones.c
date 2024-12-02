@@ -24,19 +24,19 @@ void editaFichero(FILE *fichero, RegistroComunicacion *registro)
             registro->nombreHost, registro->ip, registro->protocolo, registro->puertoEfimero);
 }
 
-void formatoFinger(char* cadena, size_t tam, const char* login, const char* nombre, const char* directory, const char* shell, const char* fecha, const char* tiempo_idle, const char* ip, const char* pts) {
+void formatoFinger(char* cadena, size_t tam, DatosFinger datos) {
     // Asegurarnos de que la cadena comience vacía
     cadena[0] = '\0';
 
     // Formatear la cadena siguiendo el patrón exacto de la imagen
     snprintf(cadena, tam, 
         "Login: %-30sName: %-30s\nDirectory: %-30sShell: %-30s\nOn since %-30s on pts/%-2s from %-15s\n%-30s\nNo mail.\nNo Plan.\n", 
-        login, 
-        nombre, 
-        directory, 
-        shell, 
-        fecha, 
-        pts, 
-        ip, 
-        tiempo_idle);
+        datos.login, 
+        datos.nombre, 
+        datos.directory, 
+        datos.shell, 
+        datos.fecha, 
+        datos.pts, 
+        datos.ip, 
+        datos.tiempo_idle);
 }

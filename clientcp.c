@@ -32,6 +32,7 @@ int main(argc, argv)
 int argc;
 char *argv[];
 {
+	printf("empieza tcp\n");
     int s;				/* connected socket descriptor */
    	struct addrinfo hints, *res;
     long timevar;			/* contains time returned by time() */

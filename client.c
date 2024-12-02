@@ -43,7 +43,6 @@ int main(int argc, char* argv[]){
     pid_t pid = fork(); //*Para permitir que varios clienetes se ejecuten a la vez
     if (pid == 0){  //Hijo
         if (strcmp(metodo, "TCP") == 0) {
-            printf("TCP\n");
             execlp("./clientcp", "clientcp", usuario, remoteHost, NULL);
         } else if (strcmp(metodo, "UDP") == 0) {
             printf("UDP\n");
