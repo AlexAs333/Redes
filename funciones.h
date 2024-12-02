@@ -1,7 +1,8 @@
 #ifndef FUNCIONES_H  // Protección de inclusión
 #define FUNCIONES_H
 
-#include <stdio.h>  // Para FILE y otras funciones estándar>
+#include <stdio.h>
+#include <stdlib.h>
 
 // Definición de la estructura para almacenar los datos de comunicación
 typedef struct {

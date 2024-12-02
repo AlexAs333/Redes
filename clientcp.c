@@ -11,9 +11,17 @@
  *
  */
  
-#include "client.c"
+#include <stdio.h>      // Para printf, fprintf, stderr, NULL, etc.
+#include <stdlib.h>     // Para exit, malloc, etc.
+#include <string.h>     // Para memset, strcmp, etc.
+#include <unistd.h>     // Para close, read, write, etc.
+#include <arpa/inet.h>  // Para htons, ntohs, inet_pton, etc.
+#include <netinet/in.h> // Para sockaddr_in, INADDR_ANY, etc.
+#include <sys/socket.h> // Para socket, connect, send, recv, etc.
+#include <netdb.h>      // Para addrinfo, getaddrinfo, etc.
+#include <time.h>       // Para time, ctime, etc.
 
-#define PUERTO 17278
+#define PUERTO 1233
 #define TAM_BUFFER 10
 
 /*
@@ -32,7 +40,6 @@ int main(argc, argv)
 int argc;
 char *argv[];
 {
-	printf("empieza tcp\n");
     int s;				/* connected socket descriptor */
    	struct addrinfo hints, *res;
     long timevar;			/* contains time returned by time() */
@@ -41,9 +48,8 @@ char *argv[];
 	int addrlen, i, j, errcode;
     /* This example uses TAM_BUFFER byte messages. */
 	char buf[TAM_BUFFER];
-
-	if (argc != 2) {
-		fprintf(stderr, "Usage:  %s <remote host>\n", argv[0]);
+	if (argc != 3) {
+		fprintf(stderr, "Usage:  %s <remote host> <usuario>\n", argv[0]);
 		exit(1);
 	}
 
@@ -128,7 +134,7 @@ char *argv[];
 	}*/
 
 	//*Envir usuario y host al servidor
-	*buf = argv[1];	//usuario
+	memcpy(buf, argv[2], strlen(argv[2]) + 1);	//usuario
 	if (send(s, buf, TAM_BUFFER, 0) != TAM_BUFFER) {
 		fprintf(stderr, "%s: Connection aborted on error ",	argv[0]);
 		fprintf(stderr, "on send number %d\n", i);
@@ -153,38 +159,16 @@ char *argv[];
 		 * after the server has sent all of its replies, and closed
 		 * its end of the connection.
 		 */
-	while (i = recv(s, buf, TAM_BUFFER, 0)) {
-		if (i == -1) {
-            perror(argv[0]);
-			fprintf(stderr, "%s: error reading result\n", argv[0]);
-			exit(1);
-		}
-			/* The reason this while loop exists is that there
-			 * is a remote possibility of the above recv returning
-			 * less than TAM_BUFFER bytes.  This is because a recv returns
-			 * as soon as there is some data, and will not wait for
-			 * all of the requested data to arrive.  Since TAM_BUFFER bytes
-			 * is relatively small compared to the allowed TCP
-			 * packet sizes, a partial receive is unlikely.  If
-			 * this example had used 2048 bytes requests instead,
-			 * a partial receive would be far more likely.
-			 * This loop will keep receiving until all TAM_BUFFER bytes
-			 * have been received, thus guaranteeing that the
-			 * next recv at the top of the loop will start at
-			 * the begining of the next reply.
-			 */
-		while (i < TAM_BUFFER) {
-			j = recv(s, &buf[i], TAM_BUFFER-i, 0);
-			if (j == -1) {
-                     perror(argv[0]);
-			         fprintf(stderr, "%s: error reading result\n", argv[0]);
-			         exit(1);
-               }
-			i += j;
-		}
-			/* Print out message indicating the identity of this reply. */
-		printf("Received result number %d\n", *buf);
-	}
+	while ((i = recv(s, buf, TAM_BUFFER, 0)) > 0) {
+    if (i == -1) {
+        perror(argv[0]);
+        fprintf(stderr, "%s: error reading result\n", argv[0]);
+        exit(1);
+    }
+    // Asegúrate de recibir todo el mensaje
+    printf("Respuesta recibida: %s\n", buf);  // Muestra la respuesta del servidor
+}
+
 
     /* Print message indicating completion of task. */
 	time(&timevar);

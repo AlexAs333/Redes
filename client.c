@@ -24,29 +24,27 @@ int main(int argc, char* argv[]){
 
     //Parámetros de entrada
     char* metodo = argv[1];
-    char* remoteHost;
-    char* usuario;
-    if(argc > 3){
-        //si aparece @ entonces
-            //usuario == despues@ argv[2]
-            //remoteHost = despues@ argv[2];
-        //sino
-            //usuario == argv[2]
-            //remoteHost = //!localhost
-    }
-    else{
-        //usuario == ???
-        //remoteHost = //!localhost
-    }
+    char* remoteHost = "nogal";
+    char* usuario = "all";
+    if(argc > 2){
+        if (strchr(argv[2], '@')) {//si aparece @ entonces
+            char* atSign = strchr(argv[2], '@');
+            *atSign = '\0'; // Separar usuario y host
+            usuario = argv[2]; //usuario == despues@ argv[2]            
+            remoteHost = atSign + 1; //remoteHost = despues@ argv[2];
+        }
+        else{   //sino hay @ usuario = argv[2] y remotehost es localhost
+            usuario = argv[2];
+        }
+    }//sino hay segundo parametro los valores x defecto
 
     //Lanzar TCP o UDP
     pid_t pid = fork(); //*Para permitir que varios clienetes se ejecuten a la vez
     if (pid == 0){  //Hijo
         if (strcmp(metodo, "TCP") == 0) {
-            execlp("./clientcp", "clientcp", usuario, remoteHost, NULL);
+            execlp("./clientcp", "clientcp", remoteHost, usuario, NULL);
         } else if (strcmp(metodo, "UDP") == 0) {
-            printf("UDP\n");
-            execlp("./clientudp", "clientudp", usuario, remoteHost, NULL);
+            execlp("./clientudp", "clientudp", remoteHost, usuario, NULL);
         } else {
             fprintf(stderr, "Usage: %s <TCP || UDP>\n", argv[0]);
             exit(1);

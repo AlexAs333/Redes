@@ -342,13 +342,14 @@ char *argv[];
  *	logging information to stdout.
  *
  */
-void serverTCP(int s, struct sockaddr_in clientaddr_in){
+void serverTCP(int s, struct sockaddr_in clientaddr_in) {
     int reqcnt = 0;              /* Keeps count of number of requests */
     char buf[TAM_BUFFER];        /* Buffer para mensajes */
     char hostname[MAXHOST];      /* Nombre del cliente remoto */
     int len, status;
     struct linger linger;        /* Configuración para cierre */
     long timevar;                /* Para guardar tiempo */
+    char mensajeRespuesta[BUFFERSIZE]; /* Buffer para la respuesta */
 
     /* Obtener el nombre del host del cliente */
     status = getnameinfo((struct sockaddr *)&clientaddr_in, sizeof(clientaddr_in),
@@ -384,11 +385,11 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in){
         printf("Mensaje %d recibido desde %s:%u: %s\n", reqcnt, 
                hostname, ntohs(clientaddr_in.sin_port), buf);
 
-        /* Aquí puedes procesar el mensaje */
-        strcpy(buf, "Hola, cliente TCP");
+        /* Aquí, asumimos que el mensaje recibido contiene el nombre del usuario */
+        snprintf(mensajeRespuesta, sizeof(mensajeRespuesta), "hola %s", buf);
 
-        /* Enviar respuesta al cliente */
-        if (send(s, buf, strlen(buf), 0) == -1) {
+        /* Enviar la respuesta personalizada con el nombre del usuario */
+        if (send(s, mensajeRespuesta, strlen(mensajeRespuesta), 0) == -1) {
             perror("send");
             break;
         }
@@ -405,6 +406,7 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in){
     close(s);
     printf("Conexión con %s:%u finalizada.\n", hostname, ntohs(clientaddr_in.sin_port));
 }
+
 
 
 /*

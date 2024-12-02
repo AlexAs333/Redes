@@ -34,7 +34,7 @@ extern int errno;
 #define ADDRNOTFOUND	0xffffffff	/* value returned for unknown host */
 #define RETRIES	5		/* number of times to retry before givin up */
 #define BUFFERSIZE	1024	/* maximum size of packets to be received */
-#define PUERTO 17278
+#define PUERTO 1233
 #define TIMEOUT 6
 #define MAXHOST 512
 /*
@@ -133,7 +133,7 @@ char *argv[];
 		 */
       memset (&hints, 0, sizeof (hints));
       hints.ai_family = AF_INET;
- 	 /* esta función es la recomendada para la compatibilidad con IPv6 gethostbyname queda obsoleta*/
+ 	 /* esta funciï¿½n es la recomendada para la compatibilidad con IPv6 gethostbyname queda obsoleta*/
     errcode = getaddrinfo (argv[1], NULL, &hints, &res); 
     if (errcode != 0){
 			/* Name was not found.  Return a
