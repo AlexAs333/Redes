@@ -1,0 +1,12 @@
+# Ignorar archivos objeto
+*.o
+
+# Ignorar ejecutables
+*.[eE]xe
+*.[lL]inux
+
+# Ignorar directorios de compilación comunes
+build/
+bin/
+obj/
+
