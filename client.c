@@ -30,7 +30,7 @@ int main(int argc, char* argv[]){
         if (strchr(argv[2], '@')) {//si aparece @ entonces
             char* atSign = strchr(argv[2], '@');
             *atSign = '\0'; // Separar usuario y host
-            usuario = argv[2]; //usuario == despues@ argv[2]            
+            usuario = argv[2]; //usuario == antes@ argv[2]            
             remoteHost = atSign + 1; //remoteHost = despues@ argv[2];
         }
         else{   //sino hay @ usuario = argv[2] y remotehost es localhost

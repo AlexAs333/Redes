@@ -22,7 +22,7 @@
 #include <time.h>       // Para time, ctime, etc.
 
 #define PUERTO 1233
-#define TAM_BUFFER 10
+#define TAM_BUFFER 1024
 
 /*
  *			M A I N
@@ -166,7 +166,7 @@ char *argv[];
         exit(1);
     }
     // Asegúrate de recibir todo el mensaje
-    printf("Respuesta recibida: %s\n", buf);  // Muestra la respuesta del servidor
+    printf("Cliente :: Respuesta recibida: %s\n", buf);  // Muestra la respuesta del servidor
 }
 
 

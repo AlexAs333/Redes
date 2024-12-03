@@ -2,8 +2,7 @@
 #include <stdio.h>       // Incluir para uso de FILE, fprintf y demás funciones estándar
 
 // Implementación de la función para editar el fichero de log
-void editaFichero(FILE *fichero, RegistroComunicacion *registro)
-{
+void editaFichero(FILE *fichero, RegistroComunicacion *registro){
     if (fichero == NULL) {    // Comprobar que el fichero esté abierto
         fprintf(stderr, "Error al editar el fichero\n");
         exit(1);
@@ -39,4 +38,66 @@ void formatoFinger(char* cadena, size_t tam, DatosFinger datos) {
         datos.pts, 
         datos.ip, 
         datos.tiempo_idle);
+}
+
+char* finger(const char *usuario) {
+    static char resultado[TAM_BUFFER]; // Usar una variable estática para la cadena final
+    struct passwd *pwd = getpwnam(usuario);
+    if (!pwd) {
+        return strdup("Usuario no encontrado.\n");
+    }
+
+    // Crear una estructura DatosFinger
+    DatosFinger datos = {0};
+
+    // Asignar memoria y copiar los valores necesarios
+    datos.login = strdup(usuario);
+    datos.nombre = strdup(pwd->pw_gecos);
+    datos.directory = strdup(pwd->pw_dir);
+    datos.shell = strdup(pwd->pw_shell);
+
+    // Buscar sesión activa en el sistema
+    struct utmpx *entry;
+    setutxent();
+    datos.fecha = strdup("Desconocido");
+    datos.pts = strdup("?");
+    datos.ip = strdup("?");
+    datos.tiempo_idle = strdup("?");
+
+    while ((entry = getutxent())) {
+        if (entry->ut_type == USER_PROCESS && strcmp(entry->ut_user, usuario) == 0) {
+            // Fecha de inicio de sesión
+            time_t tiempo = entry->ut_tv.tv_sec;
+            struct tm *tm_info = localtime(&tiempo);
+            char fecha[64];
+            strftime(fecha, sizeof(fecha), "%Y-%m-%d %H:%M:%S", tm_info);
+            free(datos.fecha);
+            datos.fecha = strdup(fecha);
+
+            // Terminal y dirección IP
+            free(datos.pts);
+            datos.pts = strdup(entry->ut_line);
+
+            free(datos.ip);
+            datos.ip = strdup(entry->ut_host);
+            break;
+        }
+    }
+    endutxent();
+
+    // Generar la salida formateada
+    formatoFinger(resultado, TAM_BUFFER, datos);
+
+    // Liberar memoria asignada en DatosFinger
+    free(datos.login);
+    free(datos.nombre);
+    free(datos.directory);
+    free(datos.shell);
+    free(datos.fecha);
+    free(datos.tiempo_idle);
+    free(datos.ip);
+    free(datos.pts);
+
+    // Retornar la cadena generada
+    return resultado;
 }

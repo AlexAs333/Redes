@@ -34,6 +34,7 @@ extern int errno;
 #define ADDRNOTFOUND	0xffffffff	/* value returned for unknown host */
 #define RETRIES	5		/* number of times to retry before givin up */
 #define BUFFERSIZE	1024	/* maximum size of packets to be received */
+#define TAM_BUFFER	1024
 #define PUERTO 1233
 #define TIMEOUT 6
 #define MAXHOST 512
@@ -78,7 +79,7 @@ char *argv[];
    	struct addrinfo hints, *res;
 
 	if (argc != 3) {
-		fprintf(stderr, "Usage:  %s <nameserver> <target>\n", argv[0]);
+		fprintf(stderr, "Usage:  %s <host> <usuario>\n", argv[0]);
 		exit(1);
 	}
 	
@@ -163,7 +164,9 @@ char *argv[];
     
 	while (n_retry > 0) {
 		/* Send the request to the nameserver. */
-        if (sendto (s, argv[2], strlen(argv[2]), 0, (struct sockaddr *)&servaddr_in,
+		char buf[TAM_BUFFER];
+		memcpy(buf, argv[2], strlen(argv[2]) + 1);	//usuario
+        if (sendto (s, buf, TAM_BUFFER, 0, (struct sockaddr *)&servaddr_in,
 				sizeof(struct sockaddr_in)) == -1) {
         		perror(argv[0]);
         		fprintf(stderr, "%s: unable to send request\n", argv[0]);
@@ -175,8 +178,9 @@ char *argv[];
 		 */
 	    alarm(TIMEOUT);
 		/* Wait for the reply to come in. */
-        if (recvfrom (s, &reqaddr, sizeof(struct in_addr), 0,
-						(struct sockaddr *)&servaddr_in, &addrlen) == -1) {
+		char res[BUFFERSIZE];
+        if (recvfrom (s, res, BUFFERSIZE, 0,
+						(struct sockaddr *)&servaddr_in, &addrlen) == -1) {	//!recibido en segundo parametro (cambiar por buf[]??)
     		if (errno == EINTR) {
     				/* Alarm went off and aborted the receive.
     				 * Need to retry the request if we have
@@ -199,7 +203,7 @@ char *argv[];
                 /* inet_ntop para interoperatividad con IPv6 */
                 if (inet_ntop(AF_INET, &reqaddr, hostname, MAXHOST) == NULL)
                    perror(" inet_ntop \n");
-                printf("Address for %s is %s\n", argv[2], hostname);
+                printf("servidor :: recibido %s\n", res);
                 }	
             break;	
             }

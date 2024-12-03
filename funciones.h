@@ -3,6 +3,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <utmpx.h>
+#include <pwd.h>
+#define TAM_BUFFER 1024
 
 // Definición de la estructura para almacenar los datos de comunicación
 typedef struct {
@@ -32,5 +37,7 @@ typedef struct{
 void editaFichero(FILE *fichero, RegistroComunicacion *registro);
 
 void formatoFinger(char* cadena, size_t tam, DatosFinger datos);    //tam será el tamaño del buffer
+
+char* finger(const char *usuario);
 
 #endif // FUNCIONES_H
