@@ -1,4 +1,11 @@
 /*
+
+** Fichero: client.c
+** Autores:
+** Daniel Dominguez Parra DNI 45138288Y
+** Alex Asensio Boj DNI
+*/
+/*
 * Programa que implementa el código del cliente y deriva a UDP o TCP segun convenga
 * Uso: ./cliente <TCP/UDP > [usuario] [usuario@host]
 */
@@ -22,21 +29,27 @@ int main(int argc, char* argv[]){
         exit(1);
     }
 
-    //Parámetros de entrada
     char* metodo = argv[1];
     char* remoteHost = "nogal";
     char* usuario = "all";
-    if(argc > 2){
-        if (strchr(argv[2], '@')) {//si aparece @ entonces
+
+    if (argc > 2) {
+        if (strchr(argv[2], '@')) { // Si aparece @ entonces
             char* atSign = strchr(argv[2], '@');
-            *atSign = '\0'; // Separar usuario y host
-            usuario = argv[2]; //usuario == antes@ argv[2]            
-            remoteHost = atSign + 1; //remoteHost = despues@ argv[2];
-        }
-        else{   //sino hay @ usuario = argv[2] y remotehost es localhost
+            if (atSign == argv[2]) { 
+                // Si el @ está al principio, no hay usuario
+                usuario = "all";
+            } else {
+                *atSign = '\0'; // Separar usuario y host
+                usuario = argv[2]; // Usuario == antes del @
+            }
+            remoteHost = atSign + 1; // RemoteHost = después del @
+        } else { 
+            // Si no hay @, usuario = argv[2] y remoteHost es "localhost"
             usuario = argv[2];
         }
-    }//sino hay segundo parametro los valores x defecto
+    }
+
 
     //Lanzar TCP o UDP
     pid_t pid = fork(); //*Para permitir que varios clienetes se ejecuten a la vez

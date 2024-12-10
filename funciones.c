@@ -1,3 +1,10 @@
+/*
+
+** Fichero: funciones.c
+** Autores:
+** Daniel Dominguez Parra DNI 45138288Y
+** Alex Asensio Boj DNI
+*/
 #include "funciones.h"  // Incluir la cabecera para usar sus funciones
 #include <stdio.h>       // Incluir para uso de FILE, fprintf y demás funciones estándar
 

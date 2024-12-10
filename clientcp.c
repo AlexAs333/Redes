@@ -1,4 +1,11 @@
 /*
+
+** Fichero: clientcp.c
+** Autores:
+** Daniel Dominguez Parra DNI 45138288Y
+** Alex Asensio Boj DNI
+*/
+/*
  *			C L I E N T C P
  *
  *	This is an example program that demonstrates the use of
@@ -21,7 +28,7 @@
 #include <netdb.h>      // Para addrinfo, getaddrinfo, etc.
 #include <time.h>       // Para time, ctime, etc.
 
-#define PUERTO 1233
+#define PUERTO 5000
 #define TAM_BUFFER 1024
 
 /*

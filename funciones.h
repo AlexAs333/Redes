@@ -1,3 +1,10 @@
+/*
+
+** Fichero: funciones.h
+** Autores:
+** Daniel Dominguez Parra DNI 45138288Y
+** Alex Asensio Boj DNI
+*/
 #ifndef FUNCIONES_H  // Protección de inclusión
 #define FUNCIONES_H
 
