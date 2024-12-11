@@ -3,7 +3,7 @@
 ** Fichero: servidor.c
 ** Autores:
 ** Daniel Dominguez Parra DNI 45138288Y
-** Alex Asensio Boj DNI
+** Alex Asensio Boj DNI 77221233K
 */
 /*
  *          		S E R V I D O R
@@ -27,7 +27,7 @@
 #include "funciones.h"
 
 
-#define PUERTO 5001
+#define PUERTO 5002
 #define ADDRNOTFOUND	0xffffffff	/* return address for unfound host */
 #define BUFFERSIZE	1024	/* maximum size of packets to be received */
 #define MAXHOST 128
@@ -44,8 +44,8 @@ extern int errno;
  *
  */
  
-void serverTCP(int s, struct sockaddr_in peeraddr_in);
-void serverUDP(int s, char * buffer, struct sockaddr_in clientaddr_in);
+void serverTCP(int s, struct sockaddr_in peeraddr_in, FILE *fichero);
+void serverUDP(int s, char * buffer, struct sockaddr_in clientaddr_in, FILE *fichero);
 void errout(char *);		/* declare error out routine */
 
 int FIN = 0;             /* Para el cierre ordenado */
@@ -73,6 +73,14 @@ char *argv[];
     char buffer[BUFFERSIZE];	/* buffer for packets to be read into */
     
     struct sigaction vec;
+
+    //*Crear el fichero
+    FILE *fichero = fopen("peticiones.log", "a");
+
+    if(fichero == NULL){
+        fprintf(stderr, "Error al abrir el fichero\n");
+        exit(1);
+    }
 
 		/* Create the listen socket. */
 	ls_TCP = socket (AF_INET, SOCK_STREAM, 0);
@@ -227,7 +235,7 @@ char *argv[];
         				exit(1);
         			case 0:		/* Child process comes here. */
                     			close(ls_TCP); /* Close the listen socket inherited from the daemon. */
-        				serverTCP(s_TCP, clientaddr_in);
+        				serverTCP(s_TCP, clientaddr_in, fichero);
         				exit(0);
         			default:	/* Daemon process comes here. */
         					/* The daemon needs to remember
@@ -264,13 +272,14 @@ char *argv[];
                 * null terminated.
                 */
                 buffer[cc]='\0';
-                serverUDP (s_UDP, buffer, clientaddr_in);
+                serverUDP (s_UDP, buffer, clientaddr_in, fichero);
                 }
           }
 		}   /* Fin del bucle infinito de atenci�n a clientes */
         /* Cerramos los sockets UDP y TCP */
         close(ls_TCP);
         close(s_UDP);
+        fclose(fichero);
     
         printf("\nFin de programa servidor!\n");
         
@@ -292,7 +301,7 @@ char *argv[];
  */
 
 // La función serverTCP modificada
-void serverTCP(int s, struct sockaddr_in clientaddr_in)
+void serverTCP(int s, struct sockaddr_in clientaddr_in, FILE *fichero)
 {
     int reqcnt = 0; /* keeps count of number of requests */
     char buf[TAM_BUFFER]; /* This example uses TAM_BUFFER byte messages. */
@@ -322,7 +331,7 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in)
     if (setsockopt(s, SOL_SOCKET, SO_LINGER, &linger, sizeof(linger)) == -1) {
         errout(hostname);
     }
-
+    char respuesta[TAM_BUFFER];
     /* Go into a loop, receiving requests from the remote client. */
     while (len = recv(s, buf, TAM_BUFFER, 0)) {
         if (len == -1) errout(hostname); /* error from recv */
@@ -334,12 +343,9 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in)
         }
 
         reqcnt++;
-
-        printf("servidor: comando recibido = %s\n", buf);
-
-        char respuesta[TAM_BUFFER];
-        if (strcmp(buf, "all") == 0) {
-            /* Abrir /etc/passwd y obtener todos los usuarios */
+        
+       /* if (strcmp(buf, "all") == 0) {
+            
             struct passwd *user;
             setpwent();  // Inicia el recorrido de usuarios en /etc/passwd
             while ((user = getpwent()) != NULL) {
@@ -353,14 +359,85 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in)
                 }
             }
             endpwent();  // Termina el recorrido de usuarios
-        } else {
+        }*/
+	if(strcmp(buf, "all") == 0){
+		FILE *fp;
+    char line[TAM_BUFFER];
+    char login[TAM_BUFFER];
+    char respuesta[TAM_BUFFER];
+    struct passwd *pwd;
+
+    // Ejecutar el comando "who"
+    fp = popen("who", "r");
+    if (fp == NULL) {
+        errout(hostname);
+    }
+
+    // Leer cada línea de la salida de "who"
+    while (fgets(line, sizeof(line), fp) != NULL) {
+        // Extraer el login (asumimos que es la primera palabra de cada línea)
+        if (sscanf(line, "%s", login) == 1) {
+            // Buscar el nombre completo del usuario usando /etc/passwd
+            pwd = getpwnam(login);
+            if (pwd == NULL) {
+                snprintf(respuesta, TAM_BUFFER, "Usuario %s no encontrado en /etc/passwd\n", login);
+            } else {
+                printf("Consultando usuario: %s (%s)\n", login, pwd->pw_gecos);
+                snprintf(respuesta, TAM_BUFFER, "%s", finger(login));
+            }
+
+            // Enviar la respuesta del finger al cliente
+            if (send(s, respuesta, strlen(respuesta), 0) != strlen(respuesta)) {
+                errout(hostname);
+            }
+        }
+    }
+
+    pclose(fp);
+	}
+	 else {
             // Si el comando no es "&", se consulta el finger del usuario indicado
             snprintf(respuesta, TAM_BUFFER, "%s", finger(buf));
             if (send(s, respuesta, strlen(respuesta), 0) != strlen(respuesta)) {
                 errout(hostname);
             }
         }
+        
     }
+    //log del TCP
+    // Obtener la fecha y hora actual para el registro
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+    char fecha[26];
+    strftime(fecha, 26, "%Y-%m-%d %H:%M:%S", tm_info);
+
+    // Obtener el nombre del host
+    char hostnameBuffer[256];
+    char nombreHost[256];
+    if (gethostname(hostnameBuffer, sizeof(hostnameBuffer)) == 0) {
+        
+        strncpy(nombreHost, hostnameBuffer, sizeof(nombreHost) - 1);
+        nombreHost[sizeof(nombreHost) - 1] = '\0';
+    } 
+    else {
+        perror("Error obteniendo el nombre del host");
+        strcpy(nombreHost, "Desconocido");
+    }
+
+    // Obtener la dirección IP del cliente
+    char ip[INET_ADDRSTRLEN];
+    strncpy(ip, inet_ntoa(clientaddr_in.sin_addr), sizeof(ip) - 1);
+    ip[sizeof(ip) - 1] = '\0';
+
+    // Definir otros valores
+    char protocolo[] = "TCP";
+    char puertoEfimero[10];
+    snprintf(puertoEfimero, sizeof(puertoEfimero), "%d", 0);  // Cambia si sabes el puerto efímero
+    int puertoCliente = ntohs(clientaddr_in.sin_port);
+
+    // Llamar a la función para escribir en el archivo
+    editaFichero(fichero, fecha, nombreHost, ip, protocolo, puertoEfimero, buf, respuesta, puertoCliente);
+
 
     close(s);
 
@@ -391,51 +468,17 @@ void errout(char *hostname)
  *	logging information to stdout.
  *
  */
-void serverUDP(int s, char *buffer, struct sockaddr_in clientaddr_in)
+void serverUDP(int s, char *buffer, struct sockaddr_in clientaddr_in, FILE *fichero)
 {
     struct in_addr reqaddr; /* for requested host's address */
     struct hostent *hp;     /* pointer to host info for requested host */
+	struct passwd *pwd;
     int nc, errcode;
     struct addrinfo hints, *res;
     int addrlen = sizeof(struct sockaddr_in);
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
-
-    char respuesta[TAM_BUFFER];
-
-    /* Manejo de la solicitud */
-    if (strcmp(buffer, "all") == 0) {
-        /* Consultar todos los usuarios en /etc/passwd */
-        struct passwd *user;
-        setpwent(); // Inicia el recorrido de usuarios en /etc/passwd
-        while ((user = getpwent()) != NULL) {
-            // Consultar la información del usuario con finger
-            snprintf(respuesta, TAM_BUFFER, "%s", finger(user->pw_name));
-
-            // Enviar la respuesta al cliente (en fragmentos si es necesario)
-            nc = sendto(s, respuesta, strlen(respuesta) + 1, 0, (struct sockaddr *)&clientaddr_in, addrlen);
-            if (nc == -1) {
-                perror("serverUDP");
-                printf("%s: sendto error\n", "serverUDP");
-                endpwent(); // Finaliza el recorrido de usuarios
-                return;
-            }
-
-        }
-        endpwent(); // Termina el recorrido de usuarios
-    } else {
-        /* Consultar un usuario específico */
-        snprintf(respuesta, TAM_BUFFER, "%s", finger(buffer));
-        nc = sendto(s, respuesta, strlen(respuesta) + 1, 0, (struct sockaddr *)&clientaddr_in, addrlen);
-        if (nc == -1) {
-            perror("serverUDP");
-            printf("%s: sendto error\n", "serverUDP");
-            return;
-        }
-    }
-}
-
 
     /* Treat the message as a string containing a hostname. */
     /* Esta función es la recomendada para la compatibilidad con IPv6 gethostbyname queda obsoleta. */
@@ -448,6 +491,113 @@ void serverUDP(int s, char *buffer, struct sockaddr_in clientaddr_in)
       }
     else {*/
         /* Copy address of host into the return buffer. */
-        /*reqaddr = ((struct sockaddr_in *) res->ai_addr)->sin_addr;
+        /*reqaddr = ((struct sockaddr_in *) res.ai_addr).sin_addr;
     }
     freeaddrinfo(res);*/
+
+    char respuesta[TAM_BUFFER];
+
+    /* Manejo de la solicitud */
+   /* if (strcmp(buffer, "all") == 0) {
+        
+        struct passwd *user;
+        setpwent(); // Inicia el recorrido de usuarios en /etc/passwd
+        while ((user = getpwent()) != NULL) {
+            // Consultar la información del usuario con finger
+            snprintf(respuesta, TAM_BUFFER, "%s", finger(user->pw_name));
+
+            // Enviar la respuesta al cliente
+            nc = sendto(s, respuesta, strlen(respuesta), 0, (struct sockaddr *)&clientaddr_in, addrlen);
+            if (nc == -1) {
+                perror("serverUDP");
+                printf("%s: sendto error\n", "serverUDP");
+                endpwent(); // Finaliza el recorrido de usuarios
+                return;
+            }
+        }
+        endpwent(); // Termina el recorrido de usuarios*/
+
+	if (strcmp(buffer, "all") == 0) {
+        printf("entra ok\n");
+        FILE *fp;
+        char line[256];
+        char login[64];
+
+        // Abrir un pipe para ejecutar el comando 'who'
+        fp = popen("who", "r");
+        if (fp == NULL) {
+            perror("popen");
+            return;
+        }
+
+        // Leer cada línea de la salida de 'who'
+        while (fgets(line, sizeof(line), fp) != NULL) {
+		if (sscanf(line, "%s", login) == 1) {
+            // Buscar el nombre completo del usuario usando /etc/passwd
+            pwd = getpwnam(login);
+            if (pwd == NULL) {
+                snprintf(respuesta, TAM_BUFFER, "Usuario %s no encontrado en /etc/passwd\n", login);
+            } else {
+                printf("Consultando usuario: %s (%s)\n", login, pwd->pw_gecos);
+                snprintf(respuesta, TAM_BUFFER, "%s", finger(login));
+            }
+                // Enviar la respuesta al cliente
+                nc = sendto(s, respuesta, strlen(respuesta) +1, 0, (struct sockaddr *)&clientaddr_in, addrlen);
+                if (nc == -1) {
+                    perror("serverUDP");
+                    printf("%s: sendto error\n", "serverUDP");
+                    pclose(fp); // Cerrar el pipe antes de salir
+                    return;
+                }
+            }
+        }
+
+        // Cerrar el pipe
+        pclose(fp);
+    }
+
+	 else {
+        /* Consultar un usuario específico */
+        snprintf(respuesta, TAM_BUFFER, "%s", finger(buffer));
+        nc = sendto(s, respuesta, strlen(respuesta) +1, 0, (struct sockaddr *)&clientaddr_in, addrlen);
+        if (nc == -1) {
+            perror("serverUDP");
+            printf("%s: sendto error\n", "serverUDP");
+            return;
+        }
+    }
+    //log del UDP
+    // Obtener la fecha y hora actual para el registro
+    time_t t = time(NULL);
+    struct tm *tm_info = localtime(&t);
+    char fecha[26];
+    strftime(fecha, 26, "%Y-%m-%d %H:%M:%S", tm_info);
+
+    // Obtener el nombre del host
+    char hostnameBuffer[256];
+    char nombreHost[256];
+    if (gethostname(hostnameBuffer, sizeof(hostnameBuffer)) == 0) {
+        
+        strncpy(nombreHost, hostnameBuffer, sizeof(nombreHost) - 1);
+        nombreHost[sizeof(nombreHost) - 1] = '\0';
+    } 
+    else {
+        perror("Error obteniendo el nombre del host");
+        strcpy(nombreHost, "Desconocido");
+    }
+
+    // Obtener la dirección IP del cliente
+    char ip[INET_ADDRSTRLEN];
+    strncpy(ip, inet_ntoa(clientaddr_in.sin_addr), sizeof(ip) - 1);
+    ip[sizeof(ip) - 1] = '\0';
+
+    // Definir otros valores
+    char protocolo[] = "UDP";
+    char puertoEfimero[10];
+    snprintf(puertoEfimero, sizeof(puertoEfimero), "%d", 0);  // Cambia si sabes el puerto efímero
+    int puertoCliente = ntohs(clientaddr_in.sin_port);
+
+    // Llamar a la función para escribir en el archivo
+    editaFichero(fichero, fecha, nombreHost, ip, protocolo, puertoEfimero, buffer, respuesta, puertoCliente);
+}
+

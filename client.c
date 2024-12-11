@@ -3,7 +3,7 @@
 ** Fichero: client.c
 ** Autores:
 ** Daniel Dominguez Parra DNI 45138288Y
-** Alex Asensio Boj DNI
+** Alex Asensio Boj DNI 77221233K
 */
 /*
 * Programa que implementa el código del cliente y deriva a UDP o TCP segun convenga

@@ -3,7 +3,7 @@
 ** Fichero: funciones.h
 ** Autores:
 ** Daniel Dominguez Parra DNI 45138288Y
-** Alex Asensio Boj DNI
+** Alex Asensio Boj DNI 77221233K
 */
 #ifndef FUNCIONES_H  // Protección de inclusión
 #define FUNCIONES_H
@@ -41,7 +41,9 @@ typedef struct{
 
 
 // Declaración de la función para editar el fichero de log
-void editaFichero(FILE *fichero, RegistroComunicacion *registro);
+void editaFichero(FILE *fichero, const char *fecha, const char *nombreHost, const char *ip,
+                  const char *protocolo, const char *puertoEfimero, const char *orden,
+                  const char *respuesta, int puertoCliente);
 
 void formatoFinger(char* cadena, size_t tam, DatosFinger datos);    //tam será el tamaño del buffer
 

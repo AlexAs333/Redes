@@ -3,7 +3,7 @@
 ** Fichero: clientcp.c
 ** Autores:
 ** Daniel Dominguez Parra DNI 45138288Y
-** Alex Asensio Boj DNI
+** Alex Asensio Boj DNI 77221233K
 */
 /*
  *			C L I E N T C P
@@ -28,7 +28,7 @@
 #include <netdb.h>      // Para addrinfo, getaddrinfo, etc.
 #include <time.h>       // Para time, ctime, etc.
 
-#define PUERTO 5001
+#define PUERTO 5002 
 #define TAM_BUFFER 1024
 
 /*
@@ -173,7 +173,7 @@ char *argv[];
         exit(1);
     }
     // Asegúrate de recibir todo el mensaje
-    printf("Cliente :: Respuesta recibida: %s\n", buf);  // Muestra la respuesta del servidor
+    printf("%s\n", buf);  // Muestra la respuesta del servidor
 }
 
 
