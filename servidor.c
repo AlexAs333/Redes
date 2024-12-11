@@ -27,7 +27,7 @@
 #include "funciones.h"
 
 
-#define PUERTO 5000
+#define PUERTO 5001
 #define ADDRNOTFOUND	0xffffffff	/* return address for unfound host */
 #define BUFFERSIZE	1024	/* maximum size of packets to be received */
 #define MAXHOST 128
@@ -402,6 +402,41 @@ void serverUDP(int s, char *buffer, struct sockaddr_in clientaddr_in)
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_INET;
 
+    char respuesta[TAM_BUFFER];
+
+    /* Manejo de la solicitud */
+    if (strcmp(buffer, "all") == 0) {
+        /* Consultar todos los usuarios en /etc/passwd */
+        struct passwd *user;
+        setpwent(); // Inicia el recorrido de usuarios en /etc/passwd
+        while ((user = getpwent()) != NULL) {
+            // Consultar la información del usuario con finger
+            snprintf(respuesta, TAM_BUFFER, "%s", finger(user->pw_name));
+
+            // Enviar la respuesta al cliente (en fragmentos si es necesario)
+            nc = sendto(s, respuesta, strlen(respuesta) + 1, 0, (struct sockaddr *)&clientaddr_in, addrlen);
+            if (nc == -1) {
+                perror("serverUDP");
+                printf("%s: sendto error\n", "serverUDP");
+                endpwent(); // Finaliza el recorrido de usuarios
+                return;
+            }
+
+        }
+        endpwent(); // Termina el recorrido de usuarios
+    } else {
+        /* Consultar un usuario específico */
+        snprintf(respuesta, TAM_BUFFER, "%s", finger(buffer));
+        nc = sendto(s, respuesta, strlen(respuesta) + 1, 0, (struct sockaddr *)&clientaddr_in, addrlen);
+        if (nc == -1) {
+            perror("serverUDP");
+            printf("%s: sendto error\n", "serverUDP");
+            return;
+        }
+    }
+}
+
+
     /* Treat the message as a string containing a hostname. */
     /* Esta función es la recomendada para la compatibilidad con IPv6 gethostbyname queda obsoleta. */
     //!!COMENTADO PORQUE BLOQUEA ?
@@ -416,36 +451,3 @@ void serverUDP(int s, char *buffer, struct sockaddr_in clientaddr_in)
         /*reqaddr = ((struct sockaddr_in *) res->ai_addr)->sin_addr;
     }
     freeaddrinfo(res);*/
-
-    char respuesta[TAM_BUFFER];
-
-    /* Manejo de la solicitud */
-    if (strcmp(buffer, "all") == 0) {
-        /* Consultar todos los usuarios en /etc/passwd */
-        struct passwd *user;
-        setpwent(); // Inicia el recorrido de usuarios en /etc/passwd
-        while ((user = getpwent()) != NULL) {
-            // Consultar la información del usuario con finger
-            snprintf(respuesta, TAM_BUFFER, "%s", finger(user->pw_name));
-
-            // Enviar la respuesta al cliente
-            nc = sendto(s, respuesta, strlen(respuesta), 0, (struct sockaddr *)&clientaddr_in, addrlen);
-            if (nc == -1) {
-                perror("serverUDP");
-                printf("%s: sendto error\n", "serverUDP");
-                endpwent(); // Finaliza el recorrido de usuarios
-                return;
-            }
-        }
-        endpwent(); // Termina el recorrido de usuarios
-    } else {
-        /* Consultar un usuario específico */
-        snprintf(respuesta, TAM_BUFFER, "%s", finger(buffer));
-        nc = sendto(s, respuesta, TAM_BUFFER, 0, (struct sockaddr *)&clientaddr_in, addrlen);
-        if (nc == -1) {
-            perror("serverUDP");
-            printf("%s: sendto error\n", "serverUDP");
-            return;
-        }
-    }
-}
