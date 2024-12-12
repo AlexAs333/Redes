@@ -366,7 +366,6 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in, FILE *fichero)
             			if (pwd == NULL) {
                 			snprintf(respuesta, TAM_BUFFER, "Usuario %s no encontrado en /etc/passwd\n", login);
             			} else {
-                			printf("Consultando usuario: %s (%s)\n", login, pwd->pw_gecos);
                 			snprintf(respuesta, TAM_BUFFER, "%s", finger(login));
             			}
 
@@ -481,48 +480,51 @@ void serverUDP(int s, char *buffer, struct sockaddr_in clientaddr_in, FILE *fich
     freeaddrinfo(res);*/
 
     char respuesta[TAM_BUFFER];
+    char acumulado[TAM_BUFFER*100];
 
 	if (strcmp(buffer, "all") == 0) {
-        FILE *fp;
-        char line[256];
-        char login[64];
+        	FILE *fp;
+        	char line[256];
+        	char login[64];
 
-        // Abrir un pipe para ejecutar el comando 'who'
-        fp = popen("who", "r");
-        if (fp == NULL) {
-            perror("popen");
-            return;
-        }
+        	// Abrir un pipe para ejecutar el comando 'who'
+        	fp = popen("who", "r");
+        	if (fp == NULL) {
+            		perror("popen");
+            	return;
+        	}
 
-        // Leer cada línea de la salida de 'who'
-        while (fgets(line, sizeof(line), fp) != NULL) {
-		if (sscanf(line, "%s", login) == 1) {
-            // Buscar el nombre completo del usuario usando /etc/passwd
-            pwd = getpwnam(login);
-            if (pwd == NULL) {
-                snprintf(respuesta, TAM_BUFFER, "Usuario %s no encontrado en /etc/passwd\n", login);
-            } else {
-                printf("Consultando usuario: %s (%s)\n", login, pwd->pw_gecos);
-                snprintf(respuesta, TAM_BUFFER, "%s", finger(login));
-            }
-                // Enviar la respuesta al cliente
-                nc = sendto(s, respuesta, strlen(respuesta) +1, 0, (struct sockaddr *)&clientaddr_in, addrlen);
-                if (nc == -1) {
-                    perror("serverUDP");
-                    printf("%s: sendto error\n", "serverUDP");
-                    pclose(fp); // Cerrar el pipe antes de salir
-                    return;
-                }
-            }
-        }
+        	// Leer cada línea de la salida de 'who'
+        	while (fgets(line, sizeof(line), fp) != NULL) {
+			if (sscanf(line, "%s", login) == 1) {
+            			// Buscar el nombre completo del usuario usando /etc/passwd
+            			pwd = getpwnam(login);
+            			if (pwd == NULL) {
+                			snprintf(respuesta, TAM_BUFFER, "Usuario %s no encontrado en /etc/passwd\n", login);
+            			} else {
+                			printf("Consultando usuario: %s (%s)\n", login, pwd->pw_gecos);
+                			snprintf(respuesta, TAM_BUFFER, "%s", finger(login));
+            			}
+                		// Enviar la respuesta al cliente
+				strcat(acumulado, respuesta);
+                		nc = sendto(s, respuesta, strlen(respuesta) +1, 0, (struct sockaddr *)&clientaddr_in, addrlen);
+                		if (nc == -1) {
+                    			perror("serverUDP");
+                    			printf("%s: sendto error\n", "serverUDP");
+                    			pclose(fp); // Cerrar el pipe antes de salir
+                    			return;
+                		}
+          		}
+        	}
 
-        // Cerrar el pipe
-        pclose(fp);
-    }
+        	// Cerrar el pipe
+        	pclose(fp);
+    	}
 
 	else {
         /* Consultar un usuario específico */
         snprintf(respuesta, TAM_BUFFER, "%s", finger(buffer));
+	strcat(acumulado,respuesta);
         nc = sendto(s, respuesta, strlen(respuesta) +1, 0, (struct sockaddr *)&clientaddr_in, addrlen);
         if (nc == -1) {
             perror("serverUDP");
@@ -564,6 +566,6 @@ void serverUDP(int s, char *buffer, struct sockaddr_in clientaddr_in, FILE *fich
     int puertoCliente = ntohs(clientaddr_in.sin_port);
 
     // Llamar a la función para escribir en el archivo
-    editaFichero(fichero, fecha, nombreHost, ip, protocolo, puertoEfimero, buffer, respuesta, puertoCliente);
+    editaFichero(fichero, fecha, nombreHost, ip, protocolo, puertoEfimero, buffer, acumulado, puertoCliente);
 }
 
