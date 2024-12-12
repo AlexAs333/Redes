@@ -332,7 +332,6 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in, FILE *fichero)
         errout(hostname);
     }
     char respuesta[TAM_BUFFER];
-    char acumulado[TAM_BUFFER*100];
     /* Go into a loop, receiving requests from the remote client. */
     while (len = recv(s, buf, TAM_BUFFER, 0)) {
         if (len == -1) errout(hostname); /* error from recv */
@@ -345,47 +344,63 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in, FILE *fichero)
 
         reqcnt++;
         
-        if(strcmp(buf, "all") == 0){
+       /* if (strcmp(buf, "all") == 0) {
+            
+            struct passwd *user;
+            setpwent();  // Inicia el recorrido de usuarios en /etc/passwd
+            while ((user = getpwent()) != NULL) {
+                // Imprimir el nombre del usuario y consultar su información con finger
+                printf("Consultando usuario: %s\n", user->pw_name);
+                snprintf(respuesta, TAM_BUFFER, "%s", finger(user->pw_name));
+
+                // Enviar la respuesta del finger al cliente
+                if (send(s, respuesta, strlen(respuesta), 0) != strlen(respuesta)) {
+                    errout(hostname);
+                }
+            }
+            endpwent();  // Termina el recorrido de usuarios
+        }*/
+	if(strcmp(buf, "all") == 0){
 		FILE *fp;
-        	char line[TAM_BUFFER];
-    		char login[TAM_BUFFER];
-    		struct passwd *pwd;
+    char line[TAM_BUFFER];
+    char login[TAM_BUFFER];
+    char respuesta[TAM_BUFFER];
+    struct passwd *pwd;
 
-    		// Ejecutar el comando "who"
-    		fp = popen("who", "r");
-   		if (fp == NULL) {
-        		errout(hostname);
-    		}
+    // Ejecutar el comando "who"
+    fp = popen("who", "r");
+    if (fp == NULL) {
+        errout(hostname);
+    }
 
-    		// Leer cada línea de la salida de "who"
-    		while (fgets(line, sizeof(line), fp) != NULL) {
-        		// Extraer el login (asumimos que es la primera palabra de cada línea)
-        		if (sscanf(line, "%s", login) == 1) {
-            			// Buscar el nombre completo del usuario usando /etc/passwd
-           			 pwd = getpwnam(login);
-            			if (pwd == NULL) {
-                			snprintf(respuesta, TAM_BUFFER, "Usuario %s no encontrado en /etc/passwd\n", login);
-            			} else {
-                			printf("Consultando usuario: %s (%s)\n", login, pwd->pw_gecos);
-                			snprintf(respuesta, TAM_BUFFER, "%s", finger(login));
-            			}
+    // Leer cada línea de la salida de "who"
+    while (fgets(line, sizeof(line), fp) != NULL) {
+        // Extraer el login (asumimos que es la primera palabra de cada línea)
+        if (sscanf(line, "%s", login) == 1) {
+            // Buscar el nombre completo del usuario usando /etc/passwd
+            pwd = getpwnam(login);
+            if (pwd == NULL) {
+                snprintf(respuesta, TAM_BUFFER, "Usuario %s no encontrado en /etc/passwd\n", login);
+            } else {
+                printf("Consultando usuario: %s (%s)\n", login, pwd->pw_gecos);
+                snprintf(respuesta, TAM_BUFFER, "%s", finger(login));
+            }
 
-            			// Enviar la respuesta del finger al cliente
-	    			strcat(acumulado, respuesta);
-				if (send(s, respuesta, strlen(respuesta), 0) != strlen(respuesta)) {
-                			errout(hostname);
-            			}
-        		}
-    		}	
+            // Enviar la respuesta del finger al cliente
+            if (send(s, respuesta, strlen(respuesta), 0) != strlen(respuesta)) {
+                errout(hostname);
+            }
+        }
+    }
 
-    		pclose(fp);
+    pclose(fp);
 	}
-	else {
-        	snprintf(respuesta, TAM_BUFFER, "%s", finger(buf));
-		strcat(acumulado,respuesta);
-            	if (send(s, respuesta, strlen(respuesta), 0) != strlen(respuesta)) {
-                	errout(hostname);
-            	}
+	 else {
+            // Si el comando no es "&", se consulta el finger del usuario indicado
+            snprintf(respuesta, TAM_BUFFER, "%s", finger(buf));
+            if (send(s, respuesta, strlen(respuesta), 0) != strlen(respuesta)) {
+                errout(hostname);
+            }
         }
         
     }
@@ -421,7 +436,7 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in, FILE *fichero)
     int puertoCliente = ntohs(clientaddr_in.sin_port);
 
     // Llamar a la función para escribir en el archivo
-    editaFichero(fichero, fecha, nombreHost, ip, protocolo, puertoEfimero, buf, acumulado, puertoCliente);
+    editaFichero(fichero, fecha, nombreHost, ip, protocolo, puertoEfimero, buf, respuesta, puertoCliente);
 
 
     close(s);
