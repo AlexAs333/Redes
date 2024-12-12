@@ -27,7 +27,7 @@
 #include "funciones.h"
 
 
-#define PUERTO 5002
+#define PUERTO 5003
 #define ADDRNOTFOUND	0xffffffff	/* return address for unfound host */
 #define BUFFERSIZE	1024	/* maximum size of packets to be received */
 #define MAXHOST 128
