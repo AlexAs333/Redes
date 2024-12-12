@@ -18,3 +18,85 @@ ORDEN RECIBIDA: nombre del host: nogal, dirección IP: 212.128.144.105, protocol
 RESPUESTA ENVIADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 37660, respuesta mandada:
  .
 COMUNICACIÓN FINALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 0.
+--------------------NUEVO LOG--------------------
+Tiempo del evento: Thu Dec 12 11:12 (CET).
+COMUNICACIÓN REALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 34860.
+ORDEN RECIBIDA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 34860, orden: David.
+RESPUESTA ENVIADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 34860, respuesta mandada:
+ Usuario no encontrado.
+.
+COMUNICACIÓN FINALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 34860.
+--------------------NUEVO LOG--------------------
+Tiempo del evento: Thu Dec 12 11:12 (CET).
+COMUNICACIÓN REALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 34858.
+ORDEN RECIBIDA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 34858, orden: all.
+RESPUESTA ENVIADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 34858, respuesta mandada:
+ .
+COMUNICACIÓN FINALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 34858.
+--------------------NUEVO LOG--------------------
+Tiempo del evento: Thu Dec 12 11:12 (CET).
+COMUNICACIÓN REALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: UDP, nº de puerto efímero del cliente: 40468.
+ORDEN RECIBIDA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: UDP, puerto del cliente: 40468, orden: all.
+RESPUESTA ENVIADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: UDP, puerto del cliente: 40468, respuesta mandada:
+ Login: andres                        Name: andres,,,                     
+Directory: /export/home/andres           Shell: /bin/bash                     
+On since Thu Dec 12 11:05 (CET)         on pts/pts/10 from 212.128.175.183
+?                             
+No mail.
+No Plan.
+.
+COMUNICACIÓN FINALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: UDP, nº de puerto efímero del cliente: 40468.
+--------------------NUEVO LOG--------------------
+Tiempo del evento: Thu Dec 12 11:12 (CET).
+COMUNICACIÓN REALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 34880.
+ORDEN RECIBIDA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 34880, orden: p1777001.
+RESPUESTA ENVIADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 34880, respuesta mandada:
+ Usuario no encontrado.
+.
+COMUNICACIÓN FINALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 34880.
+--------------------NUEVO LOG--------------------
+Tiempo del evento: Thu Dec 12 11:12 (CET).
+COMUNICACIÓN REALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 34876.
+ORDEN RECIBIDA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 34876, orden: all.
+RESPUESTA ENVIADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 34876, respuesta mandada:
+ .
+COMUNICACIÓN FINALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 34876.
+--------------------NUEVO LOG--------------------
+Tiempo del evento: Thu Dec 12 11:12 (CET).
+COMUNICACIÓN REALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: UDP, nº de puerto efímero del cliente: 40468.
+ORDEN RECIBIDA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: UDP, puerto del cliente: 40468, orden: all.
+RESPUESTA ENVIADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: UDP, puerto del cliente: 40468, respuesta mandada:
+ Login: andres                        Name: andres,,,                     
+Directory: /export/home/andres           Shell: /bin/bash                     
+On since Thu Dec 12 11:05 (CET)         on pts/pts/10 from 212.128.175.183
+?                             
+No mail.
+No Plan.
+.
+COMUNICACIÓN FINALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: UDP, nº de puerto efímero del cliente: 40468.
+--------------------NUEVO LOG--------------------
+Tiempo del evento: Thu Dec 12 11:12 (CET).
+COMUNICACIÓN REALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: UDP, nº de puerto efímero del cliente: 47340.
+ORDEN RECIBIDA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: UDP, puerto del cliente: 47340, orden: david.
+RESPUESTA ENVIADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: UDP, puerto del cliente: 47340, respuesta mandada:
+ Login: david                         Name: Moreno Montero Angeles MarIa  
+Directory: /home/p1777001                Shell: /bin/bash                     
+On since Desconocido                    on pts/?  from ?              
+?                             
+No mail.
+No Plan.
+.
+COMUNICACIÓN FINALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: UDP, nº de puerto efímero del cliente: 47340.
+--------------------NUEVO LOG--------------------
+Tiempo del evento: Thu Dec 12 11:12 (CET).
+COMUNICACIÓN REALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 34884.
+ORDEN RECIBIDA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 34884, orden: zxcvb.
+RESPUESTA ENVIADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 34884, respuesta mandada:
+ Login: zxcvb                         Name: Moreno Montero Angeles MarIa  
+Directory: /home/p1777001                Shell: /bin/bash                     
+On since Desconocido                    on pts/?  from ?              
+?                             
+No mail.
+No Plan.
+.
+COMUNICACIÓN FINALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 34884.
