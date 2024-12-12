@@ -1,0 +1,20 @@
+--------------------NUEVO LOG--------------------
+Tiempo del evento: Thu Dec 12 10:59 (CET).
+COMUNICACIÓN REALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 0.
+ORDEN RECIBIDA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 40050, orden: i7221233.
+RESPUESTA ENVIADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 40050, respuesta mandada:
+ Login: i7221233                      Name: Asensio Boj Alex              
+Directory: /home/i7221233                Shell: /bin/bash                     
+On since Thu Dec 12 09:38 (CET)         on pts/pts/40 from 212.230.133.133
+?                             
+No mail.
+No Plan.
+.
+COMUNICACIÓN FINALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 0.
+--------------------NUEVO LOG--------------------
+Tiempo del evento: Thu Dec 12 11:00 (CET).
+COMUNICACIÓN REALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 0.
+ORDEN RECIBIDA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 37660, orden: all.
+RESPUESTA ENVIADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, puerto del cliente: 37660, respuesta mandada:
+ .
+COMUNICACIÓN FINALIZADA: nombre del host: nogal, dirección IP: 212.128.144.105, protocolo de transporte: TCP, nº de puerto efímero del cliente: 0.

@@ -83,7 +83,7 @@ char* finger(const char *usuario) {
             time_t tiempo = entry->ut_tv.tv_sec;
             struct tm *tm_info = localtime(&tiempo);
             char fecha[64];
-            strftime(fecha, sizeof(fecha), "%Y-%m-%d %H:%M:%S", tm_info);
+            strftime(fecha, sizeof(fecha), "%a %b %d %H:%M (%Z)", tm_info);
             free(datos.fecha);
             datos.fecha = strdup(fecha);
 

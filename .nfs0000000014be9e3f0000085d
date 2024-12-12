@@ -409,7 +409,7 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in, FILE *fichero)
     time_t t = time(NULL);
     struct tm *tm_info = localtime(&t);
     char fecha[26];
-    strftime(fecha, 26, "%a %b %d %H:%M (%Z)", tm_info);
+    strftime(fecha, 26, "%Y-%m-%d %H:%M:%S", tm_info);
 
     // Obtener el nombre del host
     char hostnameBuffer[256];
@@ -432,7 +432,7 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in, FILE *fichero)
     // Definir otros valores
     char protocolo[] = "TCP";
     char puertoEfimero[10];
-    snprintf(puertoEfimero, sizeof(puertoEfimero), "%d",ntohs(clientaddr_in.sin_port));
+    snprintf(puertoEfimero, sizeof(puertoEfimero), "%d", 0);  // Cambia si sabes el puerto efímero
     int puertoCliente = ntohs(clientaddr_in.sin_port);
 
     // Llamar a la función para escribir en el archivo
@@ -545,14 +545,14 @@ void serverUDP(int s, char *buffer, struct sockaddr_in clientaddr_in, FILE *fich
             return;
         }
     }
-    
-    nc = sendto(s, 0,0, 0, (struct sockaddr *)&clientaddr_in, addrlen);
+    char fin [0];
+    nc = sendto(s, respuesta,0, 0, (struct sockaddr *)&clientaddr_in, addrlen);
     //log del UDP
     // Obtener la fecha y hora actual para el registro
     time_t t = time(NULL);
     struct tm *tm_info = localtime(&t);
     char fecha[26];
-    strftime(fecha, 26, "%a %b %d %H:%M (%Z)", tm_info);
+    strftime(fecha, 26, "%Y-%m-%d %H:%M:%S", tm_info);
 
     // Obtener el nombre del host
     char hostnameBuffer[256];
@@ -575,7 +575,7 @@ void serverUDP(int s, char *buffer, struct sockaddr_in clientaddr_in, FILE *fich
     // Definir otros valores
     char protocolo[] = "UDP";
     char puertoEfimero[10];
-    snprintf(puertoEfimero, sizeof(puertoEfimero), "%d",ntohs(clientaddr_in.sin_port));
+    snprintf(puertoEfimero, sizeof(puertoEfimero), "%d", 0);  // Cambia si sabes el puerto efímero
     int puertoCliente = ntohs(clientaddr_in.sin_port);
 
     // Llamar a la función para escribir en el archivo

@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
         /* Wait for the reply to come in. */
         char res[BUFFERSIZE];
         
-        while (1) {  // Este bucle recibirá todas las respuestas
+        while (fin != 1) {  // Este bucle recibirá todas las respuestas
             int bytes_received = recvfrom(s, res, BUFFERSIZE, 0, (struct sockaddr *)&servaddr_in, &addrlen);
             if (bytes_received == -1) {
                 if (errno == EINTR) {
@@ -185,23 +185,22 @@ int main(int argc, char *argv[])
             } else {
                 // Si la respuesta está bien, manejarla.
                 alarm(0);  // Desactivar la alarma si recibimos respuesta
-                
+                printf("\n%s", res);
                 // Si el servidor ha enviado un mensaje vacío o indicativo de fin de datos, salir.
                 if (bytes_received == 0) {
                     fin = 1;
                     printf("Fin de los datos recibidos.\n");
                     break;  // Terminar la espera por nuevas respuestas
                 }
-		else{
-		    printf("%s",res);   
-		}
             }
         }
+        printf("klk\n");
         // Si el servidor envía una respuesta vacía, el cliente termina.
         if (n_retry == 0) {
             break;
         }
     }
+    printf("hola\n");
     if (n_retry == 0) {
         printf("Unable to get response from %s after %d attempts.\n", argv[1], RETRIES);
     }

@@ -28,7 +28,7 @@
 #include <netdb.h>      // Para addrinfo, getaddrinfo, etc.
 #include <time.h>       // Para time, ctime, etc.
 
-#define PUERTO 5003 
+#define PUERTO 1733 
 #define TAM_BUFFER 1024
 
 /*

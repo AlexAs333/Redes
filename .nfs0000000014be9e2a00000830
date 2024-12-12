@@ -27,7 +27,7 @@
 #include "funciones.h"
 
 
-#define PUERTO 1733
+#define PUERTO 5002
 #define ADDRNOTFOUND	0xffffffff	/* return address for unfound host */
 #define BUFFERSIZE	1024	/* maximum size of packets to be received */
 #define MAXHOST 128
@@ -344,22 +344,6 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in, FILE *fichero)
 
         reqcnt++;
         
-       /* if (strcmp(buf, "all") == 0) {
-            
-            struct passwd *user;
-            setpwent();  // Inicia el recorrido de usuarios en /etc/passwd
-            while ((user = getpwent()) != NULL) {
-                // Imprimir el nombre del usuario y consultar su información con finger
-                printf("Consultando usuario: %s\n", user->pw_name);
-                snprintf(respuesta, TAM_BUFFER, "%s", finger(user->pw_name));
-
-                // Enviar la respuesta del finger al cliente
-                if (send(s, respuesta, strlen(respuesta), 0) != strlen(respuesta)) {
-                    errout(hostname);
-                }
-            }
-            endpwent();  // Termina el recorrido de usuarios
-        }*/
 	if(strcmp(buf, "all") == 0){
 		FILE *fp;
     char line[TAM_BUFFER];
@@ -398,6 +382,7 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in, FILE *fichero)
 	 else {
             // Si el comando no es "&", se consulta el finger del usuario indicado
             snprintf(respuesta, TAM_BUFFER, "%s", finger(buf));
+            printf("servidor :: respuesta a enviar: \n %s ", buf);
             if (send(s, respuesta, strlen(respuesta), 0) != strlen(respuesta)) {
                 errout(hostname);
             }
@@ -409,7 +394,7 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in, FILE *fichero)
     time_t t = time(NULL);
     struct tm *tm_info = localtime(&t);
     char fecha[26];
-    strftime(fecha, 26, "%a %b %d %H:%M (%Z)", tm_info);
+    strftime(fecha, 26, "%Y-%m-%d %H:%M:%S", tm_info);
 
     // Obtener el nombre del host
     char hostnameBuffer[256];
@@ -432,7 +417,7 @@ void serverTCP(int s, struct sockaddr_in clientaddr_in, FILE *fichero)
     // Definir otros valores
     char protocolo[] = "TCP";
     char puertoEfimero[10];
-    snprintf(puertoEfimero, sizeof(puertoEfimero), "%d",ntohs(clientaddr_in.sin_port));
+    snprintf(puertoEfimero, sizeof(puertoEfimero), "%d", 0);  // Cambia si sabes el puerto efímero
     int puertoCliente = ntohs(clientaddr_in.sin_port);
 
     // Llamar a la función para escribir en el archivo
@@ -496,8 +481,8 @@ void serverUDP(int s, char *buffer, struct sockaddr_in clientaddr_in, FILE *fich
     freeaddrinfo(res);*/
 
     char respuesta[TAM_BUFFER];
-
 	if (strcmp(buffer, "all") == 0) {
+        printf("entra ok\n");
         FILE *fp;
         char line[256];
         char login[64];
@@ -535,9 +520,10 @@ void serverUDP(int s, char *buffer, struct sockaddr_in clientaddr_in, FILE *fich
         pclose(fp);
     }
 
-	else {
+	 else {
         /* Consultar un usuario específico */
         snprintf(respuesta, TAM_BUFFER, "%s", finger(buffer));
+        printf("servidor :: respuesta a enviar: \n %s ", buffer);
         nc = sendto(s, respuesta, strlen(respuesta) +1, 0, (struct sockaddr *)&clientaddr_in, addrlen);
         if (nc == -1) {
             perror("serverUDP");
@@ -545,14 +531,12 @@ void serverUDP(int s, char *buffer, struct sockaddr_in clientaddr_in, FILE *fich
             return;
         }
     }
-    
-    nc = sendto(s, 0,0, 0, (struct sockaddr *)&clientaddr_in, addrlen);
     //log del UDP
     // Obtener la fecha y hora actual para el registro
     time_t t = time(NULL);
     struct tm *tm_info = localtime(&t);
     char fecha[26];
-    strftime(fecha, 26, "%a %b %d %H:%M (%Z)", tm_info);
+    strftime(fecha, 26, "%Y-%m-%d %H:%M:%S", tm_info);
 
     // Obtener el nombre del host
     char hostnameBuffer[256];
@@ -575,7 +559,7 @@ void serverUDP(int s, char *buffer, struct sockaddr_in clientaddr_in, FILE *fich
     // Definir otros valores
     char protocolo[] = "UDP";
     char puertoEfimero[10];
-    snprintf(puertoEfimero, sizeof(puertoEfimero), "%d",ntohs(clientaddr_in.sin_port));
+    snprintf(puertoEfimero, sizeof(puertoEfimero), "%d", 0);  // Cambia si sabes el puerto efímero
     int puertoCliente = ntohs(clientaddr_in.sin_port);
 
     // Llamar a la función para escribir en el archivo
